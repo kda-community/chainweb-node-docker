@@ -1,7 +1,7 @@
 name: Release - Bump and Publish Version
 
 ## Release automation for chainweb-node
-# Designed to run systems in chainweb/binary-release 
+# Designed to run systems in chainweb/binary-release
 
 ## Currently has manual version setting and creates draft releases;
 # when we are confident in this process, it can auto-increment and publish non-drafts
@@ -37,6 +37,13 @@ on:
         description: "Input an updated ghc version"
         type: string
         required: false
+    secrets:
+      GH_DEPLOYKEY_CHAINWEBDOCKER:
+        required: true
+      DOCKERHUB_USER:
+        required: true
+      DOCKERHUB_PAT:
+        required: true
     outputs:
       DOCKERHUB_SHA:
         description: "The sha of the final dockerhub image"
@@ -52,13 +59,13 @@ jobs:
         with:
           repository: kadena-io/chainweb-node-docker
           ssh-key: ${{ secrets.GH_DEPLOYKEY_CHAINWEBDOCKER }}
-      
+
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USER }}
           password: ${{ secrets.DOCKERHUB_PAT }}
-          
+
       - name: Update Dockerfile reference sha
         run: |
           echo "DOCKERHUB_SHA=not yet updated" >> $GITHUB_ENV
@@ -77,7 +84,7 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: kadena/chainweb-node:${{ inputs.VERSION_NEW }},kadena/chainweb-node:latest
-          
+
       - name: Test run docker image
         run: |
           docker run --rm kadena/chainweb-node:${{ inputs.VERSION_NEW }} ./chainweb-node --version
@@ -99,7 +106,7 @@ jobs:
         run: |
           ## spit these to output
           docker pull kadena/chainweb-node:${{ inputs.VERSION_NEW }}
-          docker pull kadena/chainweb-node:latest 
+          docker pull kadena/chainweb-node:latest
           digest1=$(docker inspect kadena/chainweb-node:${{ inputs.VERSION_NEW }} --format '{{ .RepoDigests }}')
           digest2=$(docker inspect kadena/chainweb-node:latest --format '{{ .RepoDigests }}')
           echo "$digest1 and $digest2"
