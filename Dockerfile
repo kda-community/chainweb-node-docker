@@ -29,7 +29,7 @@ ENV LANG=en_US.UTF-8
 
 # Install chainweb applications
 WORKDIR /chainweb
-RUN curl -Ls "https://kadena-cabal-cache.s3.amazonaws.com/chainweb-node/chainweb.true.${GHCVER}.ubuntu-${UBUNTUVER}.${REVISION}.tar.gz" \
+RUN curl -Ls "https://community-kda-cabal-cache.s3.amazonaws.com/chainweb-node/chainweb.true.${GHCVER}.ubuntu-${UBUNTUVER}.${REVISION}.tar.gz" \
     | tar -xzC "/" \
         chainweb/chainweb-node \
         chainweb/LICENSE \
@@ -57,4 +57,3 @@ STOPSIGNAL SIGTERM
 HEALTHCHECK --start-period=5m --interval=1m --retries=5 --timeout=10s CMD ./check-health.sh
 
 CMD ./run-chainweb-node.sh
-
